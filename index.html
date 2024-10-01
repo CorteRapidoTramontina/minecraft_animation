@@ -1,85 +1,127 @@
-<!DOCTYPE html>
-<html lang="en">
+# Criando um arquivo HTML com a animação 3D pronta utilizando Three.js.
+
+html_content = """<!DOCTYPE html>
+
+<html lang="pt-BR">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animação Minecraft</title>
+
+    <title>Animação 3D com Three.js</title>
+
     <style>
+
         body { margin: 0; }
+
         canvas { display: block; }
+
     </style>
+
 </head>
+
 <body>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/TextureLoader.js"></script>
 
     <script>
-        // Configuração da cena
+
+        // Configuração da cena, câmera e renderizador
+
         const scene = new THREE.Scene();
+
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
         const renderer = new THREE.WebGLRenderer({ antialias: true });
+
         renderer.setSize(window.innerWidth, window.innerHeight);
+
         document.body.appendChild(renderer.domElement);
 
-        // Criação de luz
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-        scene.add(directionalLight);
 
-        // Texturas
-        const grassTexture = new THREE.TextureLoader().load('https://example.com/textures/grass.png');
-        const dirtTexture = new THREE.TextureLoader().load('https://example.com/textures/dirt.png');
 
-        // Função para criar blocos
-        function createBlock(size, texture) {
-            const geometry = new THREE.BoxGeometry(size, size, size);
-            const material = new THREE.MeshStandardMaterial({ map: texture });
-            return new THREE.Mesh(geometry, material);
-        }
+        // Criação de um cubo
 
-        // Criação de blocos no cenário
-        for (let x = -5; x <= 5; x++) {
-            for (let z = -5; z <= 5; z++) {
-                const block = (x + z) % 2 === 0 ? createBlock(1, grassTexture) : createBlock(1, dirtTexture);
-                block.position.set(x, 0, z);
-                scene.add(block);
-            }
-        }
+        const geometry = new THREE.BoxGeometry();
 
-        // Adicionando Steve
-        const steveGeometry = new THREE.BoxGeometry(1, 1.8, 0.5);
-        const steveMaterial = new THREE.MeshStandardMaterial({ color: 0x0000ff });
-        const steve = new THREE.Mesh(steveGeometry, steveMaterial);
-        steve.position.set(0, 0.9, 0);
-        scene.add(steve);
+        const material = new THREE.MeshBasicMaterial({ color: 0x0077ff });
 
-        // Posição da câmera
-        camera.position.set(0, 5, 10);
-        camera.lookAt(0, 0, 0);
+        const cube = new THREE.Mesh(geometry, material);
 
-        // Animação
+        scene.add(cube);
+
+
+
+        // Posicionar a câmera
+
+        camera.position.z = 5;
+
+
+
+        // Função de animação
+
         function animate() {
+
             requestAnimationFrame(animate);
 
-            // Movimento da câmera
-            camera.position.x = 5 * Math.sin(Date.now() * 0.001);
-            camera.position.z = 5 * Math.cos(Date.now() * 0.001);
-            camera.lookAt(steve.position);
+
+
+            // Rotação do cubo
+
+            cube.rotation.x += 0.01;
+
+            cube.rotation.y += 0.01;
+
+
 
             renderer.render(scene, camera);
+
         }
+
+
 
         animate();
 
-        // Redimensionamento da tela
+
+
+        // Redimensionar a tela ao alterar o tamanho da janela
+
         window.addEventListener('resize', () => {
+
             const width = window.innerWidth;
+
             const height = window.innerHeight;
+
+
+
             renderer.setSize(width, height);
+
             camera.aspect = width / height;
+
             camera.updateProjectionMatrix();
+
         });
+
     </script>
+
 </body>
+
 </html>
+
+"""
+
+
+
+# Salvando o conteúdo HTML em um arquivo.
+
+file_path = '/mnt/data/animação3D.html'
+
+with open(file_path, 'w') as file:
+
+    file.write(html_content)
+
+
+
+file_path
