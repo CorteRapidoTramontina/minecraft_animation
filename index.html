@@ -12,7 +12,7 @@
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
-    
+
     <script>
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -27,50 +27,61 @@
         directionalLight.position.set(5, 10, 7.5);
         scene.add(directionalLight);
 
-        // Criar um plano para o chão
-        const planeGeometry = new THREE.PlaneGeometry(200, 200);
-        const planeMaterial = new THREE.MeshStandardMaterial({ color: 0x228B22 });
-        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-        plane.rotation.x = - Math.PI / 2;
-        scene.add(plane);
+        // Função para criar um bloco com textura
+        const createBlock = (width, height, depth, texturePath) => {
+            const geometry = new THREE.BoxGeometry(width, height, depth);
+            const texture = new THREE.TextureLoader().load(texturePath);
+            const material = new THREE.MeshStandardMaterial({ map: texture });
+            return new THREE.Mesh(geometry, material);
+        };
 
-        // Criar Steve (um modelo simplificado com múltiplos cubos)
+        // Criar blocos de grama e terra
+        const grassBlock = createBlock(1, 1, 1, 'https://i.imgur.com/1IlNhPz.png'); // Textura de grama
+        grassBlock.position.set(0, 0.5, 0);
+        scene.add(grassBlock);
+
+        const dirtBlock = createBlock(1, 1, 1, 'https://i.imgur.com/HsdN3Z6.png'); // Textura de terra
+        dirtBlock.position.set(1, 0.5, 0);
+        scene.add(dirtBlock);
+
+        // Criar Steve
         const createSteve = () => {
             const group = new THREE.Group();
+            const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xFFCC00 });
+            const headMaterial = new THREE.MeshStandardMaterial({ color: 0xFFC0CB });
+            const legMaterial = new THREE.MeshStandardMaterial({ color: 0x0000FF });
 
             // Corpo
-            const bodyGeometry = new THREE.BoxGeometry(0.8, 1.2, 0.5);
-            const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xFFCC00 });
-            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            const body = createBlock(0.8, 1.2, 0.5, null);
+            body.material = bodyMaterial;
             body.position.y = 0.6;
             group.add(body);
 
             // Cabeça
-            const headGeometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
-            const headMaterial = new THREE.MeshStandardMaterial({ color: 0xFFC0CB });
-            const head = new THREE.Mesh(headGeometry, headMaterial);
+            const head = createBlock(0.6, 0.6, 0.6, null);
+            head.material = headMaterial;
             head.position.y = 1.5;
             group.add(head);
 
             // Braços
-            const armGeometry = new THREE.BoxGeometry(0.4, 1, 0.4);
-            const armMaterial = new THREE.MeshStandardMaterial({ color: 0xFFCC00 });
-            const leftArm = new THREE.Mesh(armGeometry, armMaterial);
+            const leftArm = createBlock(0.4, 1, 0.4, null);
+            leftArm.material = bodyMaterial;
             leftArm.position.set(-0.9, 0.6, 0);
             group.add(leftArm);
 
-            const rightArm = new THREE.Mesh(armGeometry, armMaterial);
+            const rightArm = createBlock(0.4, 1, 0.4, null);
+            rightArm.material = bodyMaterial;
             rightArm.position.set(0.9, 0.6, 0);
             group.add(rightArm);
 
             // Pernas
-            const legGeometry = new THREE.BoxGeometry(0.4, 1, 0.4);
-            const legMaterial = new THREE.MeshStandardMaterial({ color: 0x0000FF });
-            const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+            const leftLeg = createBlock(0.4, 1, 0.4, null);
+            leftLeg.material = legMaterial;
             leftLeg.position.set(-0.4, -0.5, 0);
             group.add(leftLeg);
 
-            const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+            const rightLeg = createBlock(0.4, 1, 0.4, null);
+            rightLeg.material = legMaterial;
             rightLeg.position.set(0.4, -0.5, 0);
             group.add(rightLeg);
 
@@ -79,6 +90,7 @@
 
         const steve = createSteve();
         scene.add(steve);
+        steve.position.set(0, 0, 0); // Posicionar Steve no cenário
 
         // Animação
         let clock = new THREE.Clock();
@@ -86,8 +98,10 @@
         function animate() {
             requestAnimationFrame(animate);
             const delta = clock.getDelta();
+
+            // Movimento de Steve
             steve.position.x += Math.sin(clock.elapsedTime) * 0.02; // Movimento lateral
-            steve.rotation.y += 0.02; // Rotação para dar um efeito dinâmico
+            steve.rotation.y += 0.02; // Rotação
 
             // Atualizar a câmera
             camera.position.set(5, 3, 5);
