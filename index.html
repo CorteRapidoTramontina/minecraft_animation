@@ -1,197 +1,85 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Introdução Estilo Youtuber Minecraft</title>
+    <title>Animação Minecraft</title>
     <style>
-        body { margin: 0; overflow: hidden; }
+        body { margin: 0; }
         canvas { display: block; }
-        h1 {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #FFF;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
-            font-size: 48px;
-            font-family: 'Minecraft', sans-serif;
-        }
     </style>
 </head>
 <body>
-    <h1>Bem-vindo ao meu canal de Minecraft!</h1>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/TextureLoader.js"></script>
 
     <script>
-        // Configuração inicial da cena
+        // Configuração da cena
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Luzes
-        const ambientLight = new THREE.AmbientLight(0x404040); // Luz ambiente suave
+        // Criação de luz
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(5, 10, 7.5);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
         scene.add(directionalLight);
 
-        // Criar texturas de blocos
-        const textures = {
-            grass: new THREE.TextureLoader().load('https://i.imgur.com/vnFL0VQ.png'), // Grama
-            dirt: new THREE.TextureLoader().load('https://i.imgur.com/6H5VxBf.png'), // Terra
-            stone: new THREE.TextureLoader().load('https://i.imgur.com/FhlrZ3s.png'), // Pedra
-            wood: new THREE.TextureLoader().load('https://i.imgur.com/V6AyT7P.png'), // Madeira
-            leaves: new THREE.TextureLoader().load('https://i.imgur.com/mxSFGcC.png'), // Folhas
-            sky: new THREE.TextureLoader().load('https://i.imgur.com/X8lM1TW.jpg'), // Céu
-        };
+        // Texturas
+        const grassTexture = new THREE.TextureLoader().load('https://example.com/textures/grass.png');
+        const dirtTexture = new THREE.TextureLoader().load('https://example.com/textures/dirt.png');
 
-        // Criar o céu
-        const createSky = () => {
-            const geometry = new THREE.SphereGeometry(500, 60, 40);
-            const material = new THREE.MeshBasicMaterial({ map: textures.sky, side: THREE.BackSide });
-            const sky = new THREE.Mesh(geometry, material);
-            scene.add(sky);
-        };
-
-        // Função para criar um bloco
-        const createBlock = (width, height, depth, texture) => {
-            const geometry = new THREE.BoxGeometry(width, height, depth);
+        // Função para criar blocos
+        function createBlock(size, texture) {
+            const geometry = new THREE.BoxGeometry(size, size, size);
             const material = new THREE.MeshStandardMaterial({ map: texture });
             return new THREE.Mesh(geometry, material);
-        };
+        }
 
-        // Criar um terreno
-        const createTerrain = () => {
-            for (let x = -5; x <= 5; x++) {
-                for (let z = -5; z <= 5; z++) {
-                    const block = createBlock(1, 0.5, 1, textures.grass); // Bloco de grama
-                    block.position.set(x, 0, z);
-                    scene.add(block);
-                }
+        // Criação de blocos no cenário
+        for (let x = -5; x <= 5; x++) {
+            for (let z = -5; z <= 5; z++) {
+                const block = (x + z) % 2 === 0 ? createBlock(1, grassTexture) : createBlock(1, dirtTexture);
+                block.position.set(x, 0, z);
+                scene.add(block);
             }
+        }
 
-            // Adicionar alguns blocos de pedra
-            const stoneBlock = createBlock(1, 1, 1, textures.stone);
-            stoneBlock.position.set(2, 1, 2);
-            scene.add(stoneBlock);
-
-            // Adicionar blocos de terra
-            for (let x = -5; x <= 5; x += 2) {
-                for (let z = -5; z <= 5; z += 2) {
-                    const dirtBlock = createBlock(1, 0.5, 1, textures.dirt);
-                    dirtBlock.position.set(x, -0.5, z);
-                    scene.add(dirtBlock);
-                }
-            }
-
-            // Adicionar árvores
-            const treeTrunk = createBlock(0.5, 1.5, 0.5, textures.wood);
-            treeTrunk.position.set(-3, 0.75, -3);
-            scene.add(treeTrunk);
-
-            const leavesBlock = createBlock(2, 0.5, 2, textures.leaves);
-            leavesBlock.position.set(-3, 2, -3);
-            scene.add(leavesBlock);
-        };
-
-        // Criar o personagem Steve
-        const createSteve = () => {
-            const group = new THREE.Group();
-            const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xFFCC00 });
-            const headMaterial = new THREE.MeshStandardMaterial({ color: 0xFFC0CB });
-            const legMaterial = new THREE.MeshStandardMaterial({ color: 0x0000FF });
-
-            // Corpo
-            const body = createBlock(0.8, 1.2, 0.5, null);
-            body.material = bodyMaterial;
-            body.position.y = 0.6;
-            group.add(body);
-
-            // Cabeça
-            const head = createBlock(0.6, 0.6, 0.6, null);
-            head.material = headMaterial;
-            head.position.y = 1.5;
-            group.add(head);
-
-            // Braços
-            const leftArm = createBlock(0.4, 1, 0.4, null);
-            leftArm.material = bodyMaterial;
-            leftArm.position.set(-0.9, 0.6, 0);
-            group.add(leftArm);
-
-            const rightArm = createBlock(0.4, 1, 0.4, null);
-            rightArm.material = bodyMaterial;
-            rightArm.position.set(0.9, 0.6, 0);
-            group.add(rightArm);
-
-            // Pernas
-            const leftLeg = createBlock(0.4, 1, 0.4, null);
-            leftLeg.material = legMaterial;
-            leftLeg.position.set(-0.4, -0.5, 0);
-            group.add(leftLeg);
-
-            const rightLeg = createBlock(0.4, 1, 0.4, null);
-            rightLeg.material = legMaterial;
-            rightLeg.position.set(0.4, -0.5, 0);
-            group.add(rightLeg);
-
-            return group;
-        };
-
-        const steve = createSteve();
+        // Adicionando Steve
+        const steveGeometry = new THREE.BoxGeometry(1, 1.8, 0.5);
+        const steveMaterial = new THREE.MeshStandardMaterial({ color: 0x0000ff });
+        const steve = new THREE.Mesh(steveGeometry, steveMaterial);
+        steve.position.set(0, 0.9, 0);
         scene.add(steve);
-        steve.position.set(0, 0, 0);
 
-        // Criar o céu
-        createSky();
-
-        // Criar o terreno
-        createTerrain();
+        // Posição da câmera
+        camera.position.set(0, 5, 10);
+        camera.lookAt(0, 0, 0);
 
         // Animação
-        let clock = new THREE.Clock();
-
         function animate() {
             requestAnimationFrame(animate);
-            const delta = clock.getDelta();
 
             // Movimento da câmera
-            camera.position.x = Math.sin(clock.elapsedTime) * 10; // Move a câmera em círculo
-            camera.position.z = Math.cos(clock.elapsedTime) * 10; // Move a câmera em círculo
-            camera.position.y = 5; // Mantém a câmera a uma altura maior
-            camera.lookAt(0, 1, 0); // Faz a câmera olhar para Steve
-
-            // Animação de Steve
-            steve.rotation.y += 0.01; // Rotação lenta de Steve
-            steve.position.y = Math.sin(clock.elapsedTime * 3) * 0.2; // Movimento de subir e descer
-
-            // Movimento dos braços
-            steve.children[1].rotation.z = Math.sin(clock.elapsedTime * 2) * 0.5; // Braço esquerdo
-            steve.children[2].rotation.z = -Math.sin(clock.elapsedTime * 2) * 0.5; // Braço direito
-
-            // Animação de piscar da cabeça
-            if (Math.floor(clock.elapsedTime * 5) % 2 === 0) {
-                steve.children[1].material.color.set(0xFFFFFF); // Branquear a cabeça
-            } else {
-                steve.children[1].material.color.set(0xFFC0CB); // Voltar à cor original
-            }
-
-            // Adicionar alguns efeitos visuais
-            if (Math.floor(clock.elapsedTime * 2) % 2 === 0) {
-                const sparkle = createBlock(0.2, 0.2, 0.2, new THREE.TextureLoader().load('https://i.imgur.com/OzCzWqk.png'));
-                sparkle.position.set((Math.random() - 0.5) * 10, Math.random() * 5, (Math.random() - 0.5) * 10);
-                scene.add(sparkle);
-                setTimeout(() => scene.remove(sparkle), 1000); // Remove o brilho após 1 segundo
-            }
+            camera.position.x = 5 * Math.sin(Date.now() * 0.001);
+            camera.position.z = 5 * Math.cos(Date.now() * 0.001);
+            camera.lookAt(steve.position);
 
             renderer.render(scene, camera);
         }
 
         animate();
+
+        // Redimensionamento da tela
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
     </script>
 </body>
 </html>
