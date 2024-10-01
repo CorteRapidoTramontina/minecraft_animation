@@ -173,24 +173,32 @@
             steve.children[1].rotation.z = Math.sin(clock.elapsedTime * 2) * 0.5; // Braço esquerdo
             steve.children[2].rotation.z = -Math.sin(clock.elapsedTime * 2) * 0.5; // Braço direito
 
-            // Adicionar uma animação de piscar da cabeça
+            // Animação de piscar da cabeça
             if (Math.floor(clock.elapsedTime * 5) % 2 === 0) {
                 steve.children[1].material.color.set(0xFFFFFF); // Branquear a cabeça
             } else {
                 steve.children[1].material.color.set(0xFFC0CB); // Voltar à cor original
             }
 
+            // Adicionar alguns efeitos visuais
+            if (Math.floor(clock.elapsedTime * 2) % 2 === 0) {
+                const sparkle = createBlock(0.2, 0.2, 0.2, new THREE.TextureLoader().load('https://i.imgur.com/OzCzWqk.png'));
+                sparkle.position.set((Math.random() - 0.5) * 10, Math.random() * 5, (Math.random() - 0.5) * 10);
+                scene.add(sparkle);
+                setTimeout(() => { scene.remove(sparkle); }, 1000); // Remove o efeito após um segundo
+            }
+
             renderer.render(scene, camera);
         }
 
-        // Resize
+        animate();
+
+        // Redimensionar a tela
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-
-        animate();
     </script>
 </body>
 </html>
