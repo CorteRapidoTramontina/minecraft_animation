@@ -185,20 +185,13 @@
                 const sparkle = createBlock(0.2, 0.2, 0.2, new THREE.TextureLoader().load('https://i.imgur.com/OzCzWqk.png'));
                 sparkle.position.set((Math.random() - 0.5) * 10, Math.random() * 5, (Math.random() - 0.5) * 10);
                 scene.add(sparkle);
-                setTimeout(() => { scene.remove(sparkle); }, 1000); // Remove o efeito após um segundo
+                setTimeout(() => scene.remove(sparkle), 1000); // Remove o brilho após 1 segundo
             }
 
             renderer.render(scene, camera);
         }
 
         animate();
-
-        // Redimensionar a tela
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
     </script>
 </body>
 </html>
