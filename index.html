@@ -30,10 +30,11 @@
 
         // Criar texturas de blocos
         const textures = {
-            grass: new THREE.TextureLoader().load('https://i.imgur.com/1IlNhPz.png'),
-            dirt: new THREE.TextureLoader().load('https://i.imgur.com/YUUsSSe.png'),
-            stone: new THREE.TextureLoader().load('https://i.imgur.com/BOmRX5N.png'),
-            wood: new THREE.TextureLoader().load('https://i.imgur.com/V6AyT7P.png')
+            grass: new THREE.TextureLoader().load('https://i.imgur.com/vnFL0VQ.png'), // Grama
+            dirt: new THREE.TextureLoader().load('https://i.imgur.com/6H5VxBf.png'), // Terra
+            stone: new THREE.TextureLoader().load('https://i.imgur.com/FhlrZ3s.png'), // Pedra
+            wood: new THREE.TextureLoader().load('https://i.imgur.com/V6AyT7P.png'), // Madeira
+            leaves: new THREE.TextureLoader().load('https://i.imgur.com/mxSFGcC.png') // Folhas
         };
 
         // Função para criar um bloco
@@ -47,7 +48,7 @@
         const createTerrain = () => {
             for (let x = -5; x <= 5; x++) {
                 for (let z = -5; z <= 5; z++) {
-                    const block = createBlock(1, 1, 1, textures.grass); // Bloco de grama
+                    const block = createBlock(1, 0.5, 1, textures.grass); // Bloco de grama
                     block.position.set(x, 0, z);
                     scene.add(block);
                 }
@@ -66,6 +67,15 @@
                     scene.add(dirtBlock);
                 }
             }
+
+            // Adicionar árvores
+            const treeTrunk = createBlock(0.5, 1.5, 0.5, textures.wood);
+            treeTrunk.position.set(-3, 0.75, -3);
+            scene.add(treeTrunk);
+
+            const leavesBlock = createBlock(2, 0.5, 2, textures.leaves);
+            leavesBlock.position.set(-3, 2, -3);
+            scene.add(leavesBlock);
         };
 
         // Criar o personagem Steve
